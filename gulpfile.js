@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var sass = require('gulp-sass');
+var sourcemaps = require('gulp-sourcemaps');
 var browserSync = require('browser-sync').create();
 var header = require('gulp-header');
 var cleanCSS = require('gulp-clean-css');
@@ -19,10 +20,12 @@ var banner = ['/*!\n',
 // Compiles SCSS files from /scss into /css
 gulp.task('sass', function() {
   return gulp.src('scss/new-age.scss')
+    .pipe(sourcemaps.init())
     .pipe(sass())
     .pipe(header(banner, {
       pkg: pkg
     }))
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest('css'))
     .pipe(browserSync.reload({
       stream: true
