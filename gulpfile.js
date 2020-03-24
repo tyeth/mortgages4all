@@ -33,7 +33,7 @@ gulp.task('sass', function() {
 });
 
 // Minify compiled CSS
-gulp.task('minify-css', ['sass'], function() {
+gulp.task('minify-css', gulp.series('sass', function() {
   return gulp.src('css/new-age.css')
     .pipe(cleanCSS({
       compatibility: 'ie8'
@@ -45,7 +45,7 @@ gulp.task('minify-css', ['sass'], function() {
     .pipe(browserSync.reload({
       stream: true
     }))
-});
+}));
 
 // Minify custom JS
 gulp.task('minify-js', function() {
@@ -65,7 +65,7 @@ gulp.task('minify-js', function() {
 
 // Copy vendor files from /node_modules into /vendor
 // NOTE: requires `npm install` before running!
-gulp.task('copy', function() {
+gulp.task('copy', async function() {
   gulp.src([
       'node_modules/bootstrap/dist/**/*',
       '!**/npm.js',
@@ -96,7 +96,7 @@ gulp.task('copy', function() {
 })
 
 // Default task
-gulp.task('default', ['sass', 'minify-css', 'minify-js', 'copy']);
+gulp.task('default', gulp.series(gulp.parallel('minify-css', 'minify-js'), 'copy'));
 
 // Configure the browserSync task
 gulp.task('browserSync', function() {
@@ -108,11 +108,11 @@ gulp.task('browserSync', function() {
 })
 
 // Dev task with browserSync
-gulp.task('dev', ['browserSync', 'sass', 'minify-css', 'minify-js'], function() {
-  gulp.watch('scss/*.scss', ['sass']);
-  gulp.watch('css/*.css', ['minify-css']);
-  gulp.watch('js/*.js', ['minify-js']);
+gulp.task('dev', gulp.series('minify-css', 'minify-js', gulp.parallel('browserSync', function() {
+  gulp.watch('scss/*.scss', gulp.series('minify-css'));
+  gulp.watch('css/*.css', gulp.series('minify-css'));
+  gulp.watch('js/*.js', gulp.series('minify-js'));
   // Reloads the browser whenever HTML or JS files change
   gulp.watch('*.html', browserSync.reload);
   gulp.watch('js/**/*.js', browserSync.reload);
-});
+})));
