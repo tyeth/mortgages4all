@@ -37,7 +37,7 @@
     "simple-line-icons": "*"
   },
   "devDependencies": {
-    "browser-sync": "*",
+    "browser-sync": "^2.26.14",
     "gulp": "*",
     "gulp-clean-css": "*",
     "gulp-header": "*",
